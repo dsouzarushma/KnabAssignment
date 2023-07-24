@@ -1,4 +1,4 @@
-namespace WebApplication1
+namespace CryptoAPI
 {
     public class WeatherForecast
     {
