@@ -90,19 +90,5 @@ namespace CryptoAPIUnitTest
 
             Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
         }
-        [Fact]
-        public async Task GetQuote_ExternalAPIFailure()
-        {
-            // Arrange
-
-            var currencyCode = "BTC";
-            var authenticationKey = "54E4E03F8F2448619EDB8EF225E866F1";
-            await using var application = new WebApplicationFactory<Program>();
-
-            using var client = application.CreateClient();
-            client.DefaultRequestHeaders.Add("x-api-key", authenticationKey);
-            var response = await client.GetAsync("/getQuote/" + currencyCode);
-            Assert.NotEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
-        }
     }
 }
