@@ -1,6 +1,6 @@
 ﻿using CryptoAPI.Models;
 
-namespace CryptoAPI
+namespace CryptoAPI.Repositories
 {
     public class ExchangesRateHttpClient
     {
@@ -22,15 +22,23 @@ namespace CryptoAPI
         public async Task<ExchangeAPIResponse> GetExchangeRate(string baseCurrency, string exchangeCurrencies)
         {
             logger.LogInformation("ExchangeAPI call");
-            var response = new  ExchangeAPIResponse();
+            var response = new ExchangeAPIResponse();
             try
             {
-               response  = await httpClient.GetFromJsonAsync<ExchangeAPIResponse>($"latest?access_key={configuration.GetValue<string>("ExchangeRateAPISettings:apiKeyValue")}&base={baseCurrency}&symbols={exchangeCurrencies}");
+                response = await httpClient.GetFromJsonAsync<ExchangeAPIResponse>($"latest?access_key={configuration.GetValue<string>("ExchangeRateAPISettings:apiKeyValuea")}&base={baseCurrency}&symbols={exchangeCurrencies}");
                 logger.LogInformation("ExchangeAPI call completed successfully");
+            }
+            catch (HttpRequestException ex)
+            {
+                logger.LogError("ExchangeAPI call exception:" + ex.Message);
+                return new ExchangeAPIResponse
+                {
+                    success = false
+                };
             }
             catch (Exception ex)
             {
-                logger.LogError("ExchangeAPI call exception:"+ex.Message);
+                logger.LogError("ExchangeAPI call exception:" + ex.Message);
             }
             return response;
         }

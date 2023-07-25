@@ -1,6 +1,6 @@
 ﻿using CryptoAPI.Models;
 
-namespace CryptoAPI
+namespace CryptoAPI.Repositories
 {
     public class CoinMarketHttpClient
     {
@@ -11,7 +11,7 @@ namespace CryptoAPI
         {
 
             httpClient = _httpClient;
-            this.configuration = _configuration;
+            configuration = _configuration;
             this.logger = logger;
         }
         /// <summary>
@@ -20,14 +20,26 @@ namespace CryptoAPI
         /// <param name="currencyCode">This is user passed input value of Crypto Currency </param>
         /// <param name="baseCurrency">This is the base currency defined in the application. It is set to EUR in configuration file. </param>
         /// <returns></returns>
-        public async Task<CoinAPIResponse> GetCryptoQuote(string currencyCode,string baseCurrency)
+        public async Task<CoinAPIResponse> GetCryptoQuote(string currencyCode, string baseCurrency)
         {
             logger.LogInformation("Coin Market API call");
-            var response=new CoinAPIResponse();
+            var response = new CoinAPIResponse();
             try
             {
-                response = await httpClient.GetFromJsonAsync<CoinAPIResponse>($"latest?symbol={currencyCode}&convert={baseCurrency}&CMC_PRO_API_KEY={configuration.GetValue<string>("CoinMarketAPISettings:apiKeyValue")}");
+                response = await httpClient.GetFromJsonAsync<CoinAPIResponse>($"latest?symbol={currencyCode}&convert={baseCurrency}");
                 logger.LogInformation("Coin Market API call completed successfully");
+            }
+            catch (HttpRequestException ex)
+            {
+                logger.LogError("Coin Market API call exception:" + ex.Message);
+                return new CoinAPIResponse
+                {
+                    status = new CoinAPIResponse.Status
+                    {
+                        error_code = (int)ex.StatusCode,
+                        error_message = ex.Message
+                    }
+                };
             }
             catch (Exception ex)
             {
